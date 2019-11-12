@@ -140,7 +140,7 @@ sed -i 's/domain.tld/'"$domain"'/g' /etc/hosts
 
 # unzip latest
 {
-    unzip latest.zip -d /var/www/wordpress
+    unzip latest.zip -d /var/www/
 }
 
 ### db setup

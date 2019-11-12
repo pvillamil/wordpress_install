@@ -52,7 +52,7 @@ mysql_configure() {
     # create the db
     {
         create_db_comm="CREATE DATABASE $db_name;"
-        mysql -u root --password "$root_pass" -e "$create_db_comm"
+        mysql -u root --password="$root_pass" -e "$create_db_comm"
     } || {
         echo "Failed to create the db $db_name"
         exit 1
@@ -60,7 +60,7 @@ mysql_configure() {
     # create the wp db user
     {
         create_user_comm="CREATE USER $db_user@'localhost' IDENTIFIED BY $db_user_pass;"
-        mysql -u root --password "$root_pass" -e "$create_user_comm"
+        mysql -u root --password="$root_pass" -e "$create_user_comm"
     } || {
         echo "Failed to create the db user $db_user"
         exit 1
@@ -68,7 +68,7 @@ mysql_configure() {
     # grant wp_db_user permissions to wp db
     {
         grant_priv_comm="GRANT ALL PRIVILEGES ON $db_name TO $db_user@'localhost' INDENTIFIED BY $db_user_pass;"
-        mysql -u root --password "$root_pass" -e "$grant_priv_comm"    
+        mysql -u root --password="$root_pass" -e "$grant_priv_comm"    
     } || {
         echo "Failed to grant permissions to wp_db_user for $dbname"
         exit 1
@@ -168,6 +168,6 @@ DBNAME="$(echo "$domain""_db")"
 mysql_secure_install "$DBPASS"
 # create password for db user
 DBUSERPASS=$(date | md5sum | awk '{print $1}')
-echo "PLEASE NOTE!\n The pw for the db user wp_db_user is: $DBUSERPASS"
+echo -e "PLEASE NOTE!\n The pw for the db user wp_db_user is: $DBUSERPASS"
 # configure the db
 mysql_configure "$DBNAME" "$DBPASS" "wp_db_user" "$DBUSERPASS"

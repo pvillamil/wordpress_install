@@ -119,7 +119,7 @@ echo "$dom_line" >> /etc/hosts
 
 # copy default wp nginx.conf
 {
-    cp nginx.conf /etc/nginx/nginx.conf
+    cp files/nginx.conf /etc/nginx/nginx.conf
 } || {
     echo "Failed to cp the nginx conf"
     exit 1

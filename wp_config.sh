@@ -164,7 +164,7 @@ echo "PLEASE NOTE!\nThe DB root password is: $DBPASS"
     echo "The script will continue but this should be addressed manually."
 }
 # mysql secure install
-DBNAME="$domain_db"
+DBNAME="$(echo "$domain""_db")"
 mysql_secure_install "$DBPASS"
 # create password for db user
 DBUSERPASS=$(date | md5sum | awk '{print $1}')

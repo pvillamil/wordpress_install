@@ -7,18 +7,10 @@ mysql_secure_install() {
     # perform mysql secure install steps
     local root_pass=$1
 
-    # set root password to random password
-    {
-        pw_comm="UPDATE mysql.user SET Password=PASSWORD($root_pass) WHERE User='root';FLUSH PRIVILEGES;"
-        mysql -u root -e "$pw_comm"
-    } || {
-        echo "Failed to update the mysql root password."
-        exit 1
-    }
     # remove anonymous users
     {
         anon_comm="DELETE FROM mysql.user WHERE User='';"
-        mysql -u root -p "$DBPASS" -e "$anon_comm"
+        mysql -u root "$root_pass" -e "$anon_comm"
     } || {
         echo "Failed to remove anonymous users from mysql."
         echo "The script will continue but this should be addressed manually"
@@ -26,7 +18,7 @@ mysql_secure_install() {
     # remove remote root login
     {
         rm_remote_comm="DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');"
-        mysql -u root -p "$root_pass" -e "$rm_remote_comm"
+        mysql -u root "$root_pass" -e "$rm_remote_comm"
     } || {
         echo "Failed to remove remote access for root."
         echo "The script will continue but this should be addressed manually"
@@ -34,10 +26,18 @@ mysql_secure_install() {
     # remove the test db
     {
         rm_tst_db_comm="DROP DATABASE test;DELETE FROM mysql.db WHERE Db='test' OR Db='test\_%';"
-        mysql -u root -p "$root_pass" -e "$rm_tst_db_comm"
+        mysql -u root "$root_pass" -e "$rm_tst_db_comm"
     } || {
         echo "Failed to remove the test db."
         echo "The script will continue but this should be addressed manually"
+    }
+    # set root password to random password
+    {
+        pw_comm="UPDATE mysql.user SET authentication_string=PASSWORD('$root_pass') WHERE User='root';FLUSH PRIVILEGES;"
+        mysql -u root -e "$pw_comm"
+    } || {
+        echo "Failed to update the mysql root password."
+        exit 1
     }
 }
 
@@ -52,6 +52,7 @@ mysql_configure() {
     # create the db
     {
         create_db_comm="CREATE DATABASE $db_name;"
+        mysql -u root --password "$root_pass" -e "$create_db_comm"
     } || {
         echo "Failed to create the db $db_name"
         exit 1
@@ -59,7 +60,7 @@ mysql_configure() {
     # create the wp db user
     {
         create_user_comm="CREATE USER $db_user@'localhost' IDENTIFIED BY $db_user_pass;"
-        mysql -u root -p "$root_pass" -e "$create_user_comm"
+        mysql -u root --password "$root_pass" -e "$create_user_comm"
     } || {
         echo "Failed to create the db user $db_user"
         exit 1
@@ -67,7 +68,7 @@ mysql_configure() {
     # grant wp_db_user permissions to wp db
     {
         grant_priv_comm="GRANT ALL PRIVILEGES ON $db_name TO $db_user@'localhost' INDENTIFIED BY $db_user_pass;"
-        mysql -u root -p "DBPASS" -e "$grant_priv_comm"    
+        mysql -u root --password "$root_pass" -e "$grant_priv_comm"    
     } || {
         echo "Failed to grant permissions to wp_db_user for $dbname"
         exit 1
@@ -105,6 +106,7 @@ if [[ ! $(dpkg -l nginx) ]]; then
 fi
 
 # get domain name
+echo "Please enter the domain name: "
 read domain
 
 ### add entry to /etc/hosts

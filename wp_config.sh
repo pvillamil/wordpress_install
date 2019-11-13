@@ -67,10 +67,10 @@ mysql_configure() {
     }
     # grant wp_db_user permissions to wp db
     {
-        grant_priv_comm="GRANT ALL PRIVILEGES ON $db_name TO '$db_user'@'localhost' INDENTIFIED BY '$db_user_pass';"
+        grant_priv_comm="GRANT ALL PRIVILEGES ON \`$db_name\`.* TO '$db_user'@'localhost';"
         mysql -u root --password="$root_pass" -e "$grant_priv_comm"    
     } || {
-        echo "Failed to grant permissions to wp_db_user for $db_name"
+        echo "Failed to grant permissions to $db_user for $db_name"
         exit 1
     }
 }

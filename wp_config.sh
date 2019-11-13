@@ -75,6 +75,9 @@ mysql_configure() {
     }
 }
 
+www_root=/var/www/
+DBUSER=wpUser
+
 # check if php is installed and install if it is not
 if [[ ! $(dpkg -l php) ]]; then
     {
@@ -140,7 +143,7 @@ sed -i 's/domain.tld/'"$domain"'/g' /etc/hosts
 
 # unzip latest
 {
-    unzip latest.zip -d /var/www/
+    unzip latest.zip -d "$www_root"
 }
 
 ### db setup
@@ -163,11 +166,32 @@ echo "PLEASE NOTE!\nThe DB root password is: $DBPASS"
     echo "Failed to start the mysql service."
     echo "The script will continue but this should be addressed manually."
 }
-# mysql secure install
+## mysql secure install
 DBNAME="$(echo "$domain""_db")"
 mysql_secure_install "$DBPASS"
 # create password for db user
 DBUSERPASS=$(date | md5sum | awk '{print $1}')
 echo -e "PLEASE NOTE!\n The pw for the db user wp_db_user is: $DBUSERPASS"
-# configure the db
-mysql_configure "$DBNAME" "$DBPASS" "wpUser" "$DBUSERPASS"
+## configure the db
+mysql_configure "$DBNAME" "$DBPASS" "DBUSER" "$DBUSERPASS"
+
+## create wp-config.php
+cp "${www_root}wp-config-sample.php" "${www_root}wp-config.php"
+sed -i 's/database_name_here/'"$DBNAME"'/g' "${www_root}wp-config.php"
+sed -i 's/username_here/'"$DBUSER"'/g' "${www_root}wp-config.php"
+sed -i 's/password_here/'"$DBUSERPASS"'/g' "${www_root}wp-config.php"
+
+## start nginx service
+{ 
+    systemctl start nginx
+} || {
+    echo "Failed to start the nginx service"
+    exit 1
+}
+# enable the mysql service
+{
+    systemctl enable nginx
+} || {
+    echo "Failed to enable the nginx service."
+    echo "The script will continue but this should be addressed manually."
+}

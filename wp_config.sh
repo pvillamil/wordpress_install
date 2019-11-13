@@ -51,7 +51,7 @@ mysql_configure() {
 
     # create the db
     {
-        create_db_comm="CREATE DATABASE '$db_name';"
+        create_db_comm="CREATE DATABASE `$db_name`;"
         mysql -u root --password="$root_pass" -e "$create_db_comm"
     } || {
         echo "Failed to create the db $db_name"

@@ -146,7 +146,7 @@ sed -i 's/domain.tld/'"$domain"'/g' /etc/hosts
 {
     if [[ ! -d "${WWW_ROOT}wordpress" ]]
     then    
-        unzip latest.zip -d "${WWW_ROOT}wordpress"
+        unzip latest.zip -d "$WWW_ROOT"
     else
         echo "${WWW_ROOT}wordpress already exists."
     fi

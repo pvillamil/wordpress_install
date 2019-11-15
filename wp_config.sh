@@ -76,7 +76,7 @@ mysql_configure() {
 }
 
 WWW_ROOT=/var/www/
-WP_ROOT="${WWW_ROOT}wordpress"
+WP_ROOT="${WWW_ROOT}wordpress/"
 DBUSER=wpUser
 
 # check if php is installed and install if it is not

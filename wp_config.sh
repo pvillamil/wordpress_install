@@ -124,7 +124,7 @@ echo "$dom_line" >> /etc/hosts
 
 # copy default wp nginx.conf
 {
-    cp files/nginx.conf /etc/nginx/nginx.conf
+    cp files/wordpress.conf /etc/nginx/conf.d/
 } || {
     echo "Failed to cp the nginx conf"
     exit 1
@@ -143,7 +143,15 @@ sed -i 's/domain.tld/'"$domain"'/g' /etc/hosts
 
 # unzip latest
 {
-    unzip latest.zip -d "$www_root"
+    if [[ ! -d "${www_root}wordpress" ]]
+    then    
+        unzip latest.zip -d "$www_root"
+    else
+        echo "${www_root}wordpress already exists."
+    fi
+} || {
+    echo "Failed to extract the wordpress zip."
+    exit 1
 }
 
 ### db setup

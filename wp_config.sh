@@ -75,7 +75,8 @@ mysql_configure() {
     }
 }
 
-www_root=/var/www/
+WWW_ROOT=/var/www/
+WP_ROOT="${WWW_ROOT}wordpress"
 DBUSER=wpUser
 
 # check if php is installed and install if it is not
@@ -143,11 +144,11 @@ sed -i 's/domain.tld/'"$domain"'/g' /etc/hosts
 
 # unzip latest
 {
-    if [[ ! -d "${www_root}wordpress" ]]
+    if [[ ! -d "${WWW_ROOT}wordpress" ]]
     then    
-        unzip latest.zip -d "$www_root"
+        unzip latest.zip -d "${WWW_ROOT}wordpress"
     else
-        echo "${www_root}wordpress already exists."
+        echo "${WWW_ROOT}wordpress already exists."
     fi
 } || {
     echo "Failed to extract the wordpress zip."
@@ -184,10 +185,10 @@ echo -e "PLEASE NOTE!\n The pw for the db user wp_db_user is: $DBUSERPASS"
 mysql_configure "$DBNAME" "$DBPASS" "DBUSER" "$DBUSERPASS"
 
 ## create wp-config.php
-cp "${www_root}wp-config-sample.php" "${www_root}wp-config.php"
-sed -i 's/database_name_here/'"$DBNAME"'/g' "${www_root}wp-config.php"
-sed -i 's/username_here/'"$DBUSER"'/g' "${www_root}wp-config.php"
-sed -i 's/password_here/'"$DBUSERPASS"'/g' "${www_root}wp-config.php"
+cp "${WP_ROOT}wp-config-sample.php" "${WP_ROOT}wp-config.php"
+sed -i 's/database_name_here/'"$DBNAME"'/g' "${WP_ROOT}wp-config.php"
+sed -i 's/username_here/'"$DBUSER"'/g' "${WP_ROOT}wp-config.php"
+sed -i 's/password_here/'"$DBUSERPASS"'/g' "${WP_ROOT}wp-config.php"
 
 ## start nginx service
 { 

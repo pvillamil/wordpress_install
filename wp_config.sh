@@ -182,7 +182,7 @@ mysql_secure_install "$DBPASS"
 DBUSERPASS=$(date | md5sum | awk '{print $1}')
 echo -e "PLEASE NOTE!\n The pw for the db user wp_db_user is: $DBUSERPASS"
 ## configure the db
-mysql_configure "$DBNAME" "$DBPASS" "DBUSER" "$DBUSERPASS"
+mysql_configure "$DBNAME" "$DBPASS" "$DBUSER" "$DBUSERPASS"
 
 ## create wp-config.php
 cp "${WP_ROOT}wp-config-sample.php" "${WP_ROOT}wp-config.php"

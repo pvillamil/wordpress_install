@@ -33,7 +33,7 @@ mysql_secure_install() {
     }
     # set root password to random password
     {
-        pw_comm="UPDATE mysql.user SET authentication_string=PASSWORD('$root_pass') WHERE User='root';FLUSH PRIVILEGES;"
+        pw_comm="UPDATE mysql.user SET authentication_string=password('$root_pass') WHERE User='root';FLUSH PRIVILEGES;"
         mysql -u root -e "$pw_comm"
     } || {
         echo "Failed to update the mysql root password."
@@ -78,6 +78,16 @@ mysql_configure() {
 WWW_ROOT=/var/www/
 WP_ROOT="${WWW_ROOT}wordpress/"
 DBUSER=wpUser
+
+# install unzip to make sure wp can be extracted
+if [[ ! $(dpkg -l unzip) ]]; then
+    {
+        apt-get install -y unzip
+    } || {
+        echo "Failed to install unzip"
+        exit 1
+    }
+fi
 
 # check if php is installed and install if it is not
 if [[ ! $(dpkg -l php) ]]; then

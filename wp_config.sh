@@ -10,7 +10,7 @@ mysql_secure_install() {
     # remove anonymous users
     {
         anon_comm="DELETE FROM mysql.user WHERE User='';"
-        mysql -u root "$root_pass" -e "$anon_comm"
+        mysql -u root -e "$anon_comm"
     } || {
         echo "Failed to remove anonymous users from mysql."
         echo "The script will continue but this should be addressed manually"
@@ -18,7 +18,7 @@ mysql_secure_install() {
     # remove remote root login
     {
         rm_remote_comm="DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');"
-        mysql -u root "$root_pass" -e "$rm_remote_comm"
+        mysql -u root -e "$rm_remote_comm"
     } || {
         echo "Failed to remove remote access for root."
         echo "The script will continue but this should be addressed manually"
@@ -26,7 +26,7 @@ mysql_secure_install() {
     # remove the test db
     {
         rm_tst_db_comm="DROP DATABASE test;DELETE FROM mysql.db WHERE Db='test' OR Db='test\_%';"
-        mysql -u root "$root_pass" -e "$rm_tst_db_comm"
+        mysql -u root -e "$rm_tst_db_comm"
     } || {
         echo "Failed to remove the test db."
         echo "The script will continue but this should be addressed manually"

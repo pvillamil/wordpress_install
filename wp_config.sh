@@ -33,7 +33,7 @@ mysql_secure_install() {
     }
     # set root password to random password
     {
-        pw_comm="UPDATE mysql.user SET authentication_string=password('$root_pass') WHERE User='root';FLUSH PRIVILEGES;"
+        pw_comm="UPDATE mysql.user SET authentication_string='$root_pass' WHERE User='root';FLUSH PRIVILEGES;"
         mysql -u root -e "$pw_comm"
     } || {
         echo "Failed to update the mysql root password."
@@ -142,7 +142,7 @@ echo "$dom_line" >> /etc/hosts
 }
 
 # set the domain in the conf
-sed -i 's/domain.tld/'"$domain"'/g' /etc/hosts
+sed -i 's/domain.tld/'"$domain"'/g' /etc/nginx/conf.d/wordpress.conf
 
 # download latest wordpress
 { 
@@ -199,6 +199,11 @@ cp "${WP_ROOT}wp-config-sample.php" "${WP_ROOT}wp-config.php"
 sed -i 's/database_name_here/'"$DBNAME"'/g' "${WP_ROOT}wp-config.php"
 sed -i 's/username_here/'"$DBUSER"'/g' "${WP_ROOT}wp-config.php"
 sed -i 's/password_here/'"$DBUSERPASS"'/g' "${WP_ROOT}wp-config.php"
+
+
+## make sure no apache instances are running
+systemctl stop apache2
+systemctl disable apache2
 
 ## start nginx service
 { 

@@ -92,7 +92,8 @@ fi
 # check if php is installed and install if it is not
 if [[ ! $(dpkg -l php) ]]; then
     {
-        apt-get install -y php
+        apt-get install -y php php-curl php-gd php-intl php-mbstring php-soap
+        php-xml php-xmlrpc php-zip
     } || {
         echo "Failed to install PHP"
         exit 1

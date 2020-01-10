@@ -184,6 +184,14 @@ echo "$dom_line" >> /etc/hosts
     exit 1
 }
 
+# unlink default page
+{
+    unlink /etc/nginx/sites-enabled/default.conf
+} || {
+    echo "Failed to disable the default site."
+    exit 1
+}
+
 # set the domain in the conf
 sed -i 's/domain.tld/'"$domain"'/g' /etc/nginx/sites-available/wordpress.conf
 

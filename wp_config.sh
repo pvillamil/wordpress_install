@@ -40,7 +40,7 @@ mysql_configure() {
     # create the db
     {
         create_db_comm="CREATE DATABASE \`$db_name\`;"
-        mysql -u root --password="$root_pass" -e "$create_db_comm"
+        mysql -u root -e "$create_db_comm"
     } || {
         echo "Failed to create the db $db_name"
         exit 1
@@ -48,7 +48,7 @@ mysql_configure() {
     # create the wp db user
     {
         create_user_comm="CREATE USER '$db_user'@'localhost' IDENTIFIED BY '$db_user_pass';"
-        mysql -u root --password="$root_pass" -e "$create_user_comm"
+        mysql -u root -e "$create_user_comm"
     } || {
         echo "Failed to create the db user $db_user"
         exit 1
@@ -56,7 +56,7 @@ mysql_configure() {
     # grant wp_db_user permissions to wp db
     {
         grant_priv_comm="GRANT ALL PRIVILEGES ON \`$db_name\`.* TO '$db_user'@'localhost';"
-        mysql -u root --password="$root_pass" -e "$grant_priv_comm"    
+        mysql -u root -e "$grant_priv_comm"    
     } || {
         echo "Failed to grant permissions to $db_user for $db_name"
         exit 1
@@ -178,7 +178,8 @@ echo "$dom_line" >> /etc/hosts
 
 # copy default wp nginx.conf
 {
-    cp files/wordpress.conf /etc/nginx/conf.d/
+    cp files/wordpress.conf /etc/nginx/sites-available/
+    ln -s /etc/nginx/sites-enabled/wordpress.conf /etc/nginx/sites-available/wordpress.conf
 } || {
     echo "Failed to cp the nginx conf"
     exit 1
@@ -234,7 +235,7 @@ echo -e "PLEASE NOTE!\n The pw for the db user wp_db_user is: $DBUSERPASS"
 mysql_configure "$DBNAME" "$DBUSER" "$DBUSERPASS"
 
 ## create wp-config.php
-php_config
+php_config "$DBNAME" "$DBUSER" "$DBUSERPASS"
 
 ## make sure no apache instances are running
 systemctl stop apache2

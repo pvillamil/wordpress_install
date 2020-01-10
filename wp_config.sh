@@ -185,7 +185,7 @@ echo "$dom_line" >> /etc/hosts
 }
 
 # set the domain in the conf
-sed -i 's/domain.tld/'"$domain"'/g' /etc/nginx/conf.d/wordpress.conf
+sed -i 's/domain.tld/'"$domain"'/g' /etc/nginx/sites-available/wordpress.conf
 
 # download latest wordpress
 { 

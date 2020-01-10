@@ -109,7 +109,7 @@ install_pkg() {
 
     if [[ ! $(dpkg -l "$PKG" &> /dev/null) ]]; then
         {
-            echo "Installing $PKG"
+            echo "Installing $PKG..."
             apt-get install -y "$PKG" &> /dev/null
         } || {
             echo "Failed to install $PKG"
@@ -196,9 +196,10 @@ echo "$dom_line" >> /etc/hosts
 sed -i 's/domain.tld/'"$domain"'/g' /etc/nginx/sites-available/wordpress.conf
 
 # download latest wordpress
-{ 
+{
+    echo "Extracting wordpress..."
     cd /tmp
-    curl -LO http://wordpress.org/latest.tar.gz
+    curl -LO http://wordpress.org/latest.tar.gz &> /dev/null
 } || { 
     echo "Failed to download the latest wordpress"
     exit 1
@@ -221,14 +222,16 @@ sed -i 's/domain.tld/'"$domain"'/g' /etc/nginx/sites-available/wordpress.conf
 #echo "PLEASE NOTE!\nThe DB root password is: $DBPASS"
 # start service
 { 
-    systemctl start mysql
+    echo "Starting mysql..."
+    systemctl start mysql &> /dev/null
 } || {
     echo "Failed to start the mysql service"
     exit 1
 }
 # enable the mysql service
 {
-    systemctl enable mysql
+    echo "Enabling mysql..."
+    systemctl enable mysql &> /dev/null
 } || {
     echo "Failed to start the mysql service."
     echo "The script will continue but this should be addressed manually."
@@ -245,8 +248,14 @@ mysql_configure "$DBNAME" "$DBUSER" "$DBUSERPASS"
 php_config "$DBNAME" "$DBUSER" "$DBUSERPASS"
 
 ## make sure no apache instances are running
-systemctl stop apache2
-systemctl disable apache2
+if [[ $(systemctl is-active --quiet apache2) ]]
+then
+{
+    systemctl stop apache2 && \
+    systemctl disable apache2
+} || {
+    echo -e "Apache2 is running and failed to stop or disable.\n Please check."
+}
 
 ## start nginx service
 { 

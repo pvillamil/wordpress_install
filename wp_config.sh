@@ -255,5 +255,5 @@ chown -R www-data:www-data "$WP_ROOT"
     echo "The script will continue but this should be addressed manually."
 }
 
-echo "\nThe script completed successfully."
+echo -e "\nThe script completed successfully."
 echo "Please complete the installation at $domain."

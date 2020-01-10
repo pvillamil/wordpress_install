@@ -247,15 +247,18 @@ DBNAME="${domain}_db"
 DBUSERPASS=$(date | md5sum | awk '{print $1}')
 echo -e "PLEASE NOTE!\nThe pw for the db user wp_db_user is: $DBUSERPASS"
 ## configure the db
+echo "Configuring mysql..."
 mysql_configure "$DBNAME" "$DBUSER" "$DBUSERPASS"
 
 ## create wp-config.php
+echo "Creating php config..."
 php_config "$DBNAME" "$DBUSER" "$DBUSERPASS"
 
 ## make sure no apache instances are running
 if [[ $(systemctl is-active --quiet apache2) -eq 0 ]]
 then
     {
+        echo "Apache2 is running. Stopping..."
         systemctl stop apache2 &> /dev/null &&\
         systemctl disable apache2 &> /dev/null
     } || {
@@ -281,3 +284,6 @@ chown -R www-data:www-data "$WP_ROOT"
     echo "Failed to enable the nginx service."
     echo "The script will continue but this should be addressed manually."
 }
+
+echo "The script completed successfully."
+echo "Please complete the installation at $domain."

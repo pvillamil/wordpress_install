@@ -132,7 +132,7 @@ echo "Please enter the domain name: "
 read domain
 
 ### install packages
-echo -e "\nINSTALING PACKAGES"
+echo -e "\nINSTALLING PACKAGES"
 # update package manifest
 echo -e "Updating package manifest..."
 apt-get update &> /dev/null
@@ -161,7 +161,7 @@ echo -e "CONFIGURING MYSQL"
 }
 # enable the mysql service
 {
-    echo -e "Enabling mysql...\n"
+    echo -e "Enabling mysql..."
     systemctl enable mysql &> /dev/null
 } || {
     echo "Failed to start the mysql service."
@@ -176,19 +176,8 @@ DBUSERPASS=$(date | md5sum | awk '{print $1}')
 echo "Creating $DBUSER and $DBNAME..."
 mysql_configure "$DBNAME" "$DBUSER" "$DBUSERPASS"
 
-### add entry to /etc/hosts
-echo -e "Adding entry to /etc/hosts\n"
-# use touch to make sure /etc/hosts exists
-touch /etc/hosts
-# create line
-dom_line="127.0.0.1 $domain"
-# delete any existing references to the domain
-sed -i '/'^"$domain"'/d' /etc/hosts
-# add the domain line
-echo "$dom_line" >> /etc/hosts
-
 ## configuring nginx
-echo -e "CONFIGURING NGINX\n"
+echo -e "CONFIGURING NGINX"
 
 # copy default wp nginx.conf and add the server_name
 {
@@ -210,11 +199,11 @@ echo -e "CONFIGURING NGINX\n"
 }
 
 ## install wordpress
-echo -e "INSTALLING WORDPRESS\n"
+echo -e "INSTALLING WORDPRESS"
 
 # download latest wordpress
 {
-    echo -e "Extracting wordpress...\n"
+    echo -e "Downloading wordpress..."
     cd /tmp
     curl -LO http://wordpress.org/latest.tar.gz &> /dev/null
 } || { 
@@ -226,6 +215,7 @@ echo -e "INSTALLING WORDPRESS\n"
 {
     if [[ ! -d "${WWW_ROOT}wordpress" ]]
     then    
+        echo -e "Extracting wordpress..."
         tar -C ${WWW_ROOT} -xvzf latest.tar.gz &> /dev/null
     else
         echo "${WWW_ROOT}wordpress already exists."
@@ -236,8 +226,26 @@ echo -e "INSTALLING WORDPRESS\n"
 }
 
 ## create wp-config.php
-echo -e "Creating php config...\n"
+echo -e "Creating php config..."
 php_config "$DBNAME" "$DBUSER" "$DBUSERPASS"
+
+# set ownership on WP_ROOT
+echo -e "Setting ownership of $WP_ROOT to www-data:www-data...\n"
+chown -R www-data:www-data "$WP_ROOT"
+
+### perform system steps
+echo "SYSTEM"
+
+## add entry to /etc/hosts
+echo -e "Adding entry to /etc/hosts\n"
+# use touch to make sure /etc/hosts exists
+touch /etc/hosts
+# create line
+dom_line="127.0.0.1 $domain"
+# delete any existing references to the domain
+sed -i '/'^"$domain"'/d' /etc/hosts
+# add the domain line
+echo "$dom_line" >> /etc/hosts
 
 ## make sure no apache instances are running
 if [[ $(systemctl is-active --quiet apache2) -eq 0 ]]
@@ -250,10 +258,6 @@ then
         echo -e "Apache2 is running and failed to stop or disable.\nPlease check."
     }
 fi
-
-# set ownership on WP_ROOT
-echo -e "Setting ownership of $WP_ROOT to www-data:www-data...\n"
-chown -R www-data:www-data "$WP_ROOT"
 
 ## start php-fpm
 {

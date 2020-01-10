@@ -110,7 +110,7 @@ install_pkg() {
     if [[ ! $(dpkg -l "$PKG") ]]; then
         {
             echo "Installing $PKG"
-            apt-get install -y "$PKG" 2> /dev/null
+            apt-get install -y "$PKG" &> /dev/null
         } || {
             echo "Failed to install $PKG"
             exit 1

@@ -19,4 +19,4 @@ The script should be run as a user with sudo privileges or as root.
 + Once the script has completed successfully log into the wordpress instance and complete the installation.
 
 ## Demo
-![wp_config.sh demo](assets/demo.gif)
+![wp_config.sh demo](assets/wp_config_demo.gif)

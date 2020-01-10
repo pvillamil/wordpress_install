@@ -126,6 +126,9 @@ DBUSER=wpUser
 echo "Please enter the domain name: "
 read domain
 
+# update package manifest
+apt-get update
+
 PACKAGES=("php" "php-curl" "php-gd" "php-xml" "php-xmlrpc" "php7.3-fpm" "php-mysql" "mysql-server"
     "nginx")
 

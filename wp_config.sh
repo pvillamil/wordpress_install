@@ -122,8 +122,7 @@ WWW_ROOT=/var/www/
 WP_ROOT="${WWW_ROOT}wordpress/"
 DBUSER=wpUser
 
-PACKAGES=("php" "php-curl" "php-gd" "php-intl" "php-mbstring" "php-soap"
-    "php-xml" "php-xmlrpc" "php-zip" "php-fpm" "php-mysql" "mysql-server"
+PACKAGES=("php" "php-curl" "php-gd" "php-xml" "php-xmlrpc" "php7.3-fpm" "php-mysql" "mysql-server"
     "nginx")
 
 for pkg in "${PACKAGES[@]}"
@@ -179,7 +178,7 @@ echo "$dom_line" >> /etc/hosts
 # copy default wp nginx.conf
 {
     cp files/wordpress.conf /etc/nginx/sites-available/
-    ln -s /etc/nginx/sites-enabled/wordpress.conf /etc/nginx/sites-available/wordpress.conf
+    ln -s /etc/nginx/sites-available/wordpress.conf /etc/nginx/sites-enabled/wordpress.conf 
 } || {
     echo "Failed to cp the nginx conf"
     exit 1

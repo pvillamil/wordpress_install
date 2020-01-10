@@ -182,8 +182,8 @@ echo "$dom_line" >> /etc/hosts
 
 # copy default wp nginx.conf
 {
-    cp files/wordpress.conf /etc/nginx/sites-available/
-    ln -s /etc/nginx/sites-available/wordpress.conf /etc/nginx/sites-enabled/wordpress 
+    sed 's/insert_server_name/'"$domain"'/g' files/wordpress > /etc/nginx/sites-available/wordpress
+    ln -s /etc/nginx/sites-available/wordpress /etc/nginx/sites-enabled/wordpress 
 } || {
     echo "Failed to cp the nginx conf"
     exit 1

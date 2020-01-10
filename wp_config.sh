@@ -259,9 +259,13 @@ then
         systemctl stop apache2 &> /dev/null &&\
         systemctl disable apache2 &> /dev/null
     } || {
-        echo -e "Apache2 is running and failed to stop or disable.\n Please check."
+        echo -e "Apache2 is running and failed to stop or disable.\nPlease check."
     }
 fi
+
+# set ownership on /var/www/wordpress
+echo "Setting ownership of $WP_ROOT to www-data:www-data..."
+chown -R www-data:www-data "$WP_ROOT"
 
 ## start nginx service
 { 
@@ -270,7 +274,7 @@ fi
     echo "Failed to start the nginx service"
     exit 1
 }
-# enable the mysql service
+# enable the nginx service
 {
     systemctl enable nginx &> /dev/null
 } || {

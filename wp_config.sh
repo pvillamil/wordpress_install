@@ -178,7 +178,7 @@ echo "$dom_line" >> /etc/hosts
 # copy default wp nginx.conf
 {
     cp files/wordpress.conf /etc/nginx/sites-available/
-    ln -s /etc/nginx/sites-available/wordpress.conf /etc/nginx/sites-enabled/wordpress.conf 
+    ln -s /etc/nginx/sites-available/wordpress.conf /etc/nginx/sites-enabled/wordpress 
 } || {
     echo "Failed to cp the nginx conf"
     exit 1
@@ -186,7 +186,7 @@ echo "$dom_line" >> /etc/hosts
 
 # unlink default page
 {
-    unlink /etc/nginx/sites-enabled/default.conf
+    unlink /etc/nginx/sites-enabled/default
 } || {
     echo "Failed to disable the default site."
     exit 1

@@ -212,7 +212,7 @@ sed -i 's/domain.tld/'"$domain"'/g' /etc/nginx/sites-available/wordpress.conf
 {
     if [[ ! -d "${WWW_ROOT}wordpress" ]]
     then    
-        tar -C ${WWW_ROOT} -xvzf latest.tar.gz
+        tar -C ${WWW_ROOT} -xvzf latest.tar.gz &> /dev/null
     else
         echo "${WWW_ROOT}wordpress already exists."
     fi

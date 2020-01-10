@@ -242,8 +242,8 @@ chown -R www-data:www-data "$WP_ROOT"
 
 ## start php-fpm
 {
-    systemctl start php7.3-fpm &&\
-    systemctl enable php7.3-fpm
+    systemctl start php7.3-fpm &> /dev/null &&\
+    systemctl enable php7.3-fpm &> /dev/null
 } || {
     echo "Failed to satrt php-fpm."
     exit 1

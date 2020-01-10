@@ -169,7 +169,7 @@ read domain
 # use touch to make sure /etc/hosts exists
 touch /etc/hosts
 # create line
-dom_line="$domain   localhost"
+dom_line="127.0.0.1 $domain"
 # delete any existing references to the domain
 sed -i '/'^"$domain"'/d' /etc/hosts
 # add the domain line

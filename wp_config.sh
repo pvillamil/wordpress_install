@@ -107,7 +107,7 @@ php_config() {
 install_pkg() {
     local PKG=$1
 
-    if ! dpkg -l "$PKG" &> /dev/null
+    if ! dpkg -s "$PKG" &> /dev/null
     then
         {
             echo "Installing $PKG..."

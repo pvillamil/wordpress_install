@@ -244,7 +244,7 @@ sed -i 's/domain.tld/'"$domain"'/g' /etc/nginx/sites-available/wordpress.conf
 DBNAME="${domain}_db"
 # create password for db user
 DBUSERPASS=$(date | md5sum | awk '{print $1}')
-echo -e "PLEASE NOTE!\n The pw for the db user wp_db_user is: $DBUSERPASS"
+echo -e "PLEASE NOTE!\nThe pw for the db user wp_db_user is: $DBUSERPASS"
 ## configure the db
 mysql_configure "$DBNAME" "$DBUSER" "$DBUSERPASS"
 

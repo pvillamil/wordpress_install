@@ -242,7 +242,7 @@ echo "$dom_line" >> /etc/hosts
 DBNAME="${domain}_db"
 # create password for db user
 DBUSERPASS=$(date | md5sum | awk '{print $1}')
-echo -e "PLEASE NOTE!\nThe pw for the db user wp_db_user is: $DBUSERPASS"
+echo -e "PLEASE NOTE!\nThe pw for the db user $DBUSER is: $DBUSERPASS"
 ## configure the db
 echo "Configuring mysql..."
 mysql_configure "$DBNAME" "$DBUSER" "$DBUSERPASS"

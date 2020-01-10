@@ -240,6 +240,15 @@ fi
 echo "Setting ownership of $WP_ROOT to www-data:www-data..."
 chown -R www-data:www-data "$WP_ROOT"
 
+## start php-fpm
+{
+    systemctl start php7.3-fpm &&\
+    systemctl enable php7.3-fpm
+} || {
+    echo "Failed to satrt php-fpm."
+    exit 1
+}
+
 ## start nginx service
 { 
     systemctl restart nginx &> /dev/null

@@ -144,7 +144,11 @@ do
     install_pkg "$pkg" 
 done
 
+# insert blank line in output for readability
+echo ""
+
 ### add entry to /etc/hosts
+echo -e "Adding entry to /etc/hosts\n"
 # use touch to make sure /etc/hosts exists
 touch /etc/hosts
 # create line
@@ -156,6 +160,7 @@ echo "$dom_line" >> /etc/hosts
 
 # copy default wp nginx.conf and add the server_name
 {
+    echo -e "Copying nginx config..."
     sed 's/insert_server_name/'"$domain"'/g' files/wordpress > /etc/nginx/sites-available/wordpress
     ln -s /etc/nginx/sites-available/wordpress /etc/nginx/sites-enabled/wordpress 
 } || {
@@ -165,6 +170,7 @@ echo "$dom_line" >> /etc/hosts
 
 # unlink default page
 {
+    echo -e "Disabling the default site...\n"
     unlink /etc/nginx/sites-enabled/default
 } || {
     echo "Failed to disable the default site."
@@ -173,7 +179,7 @@ echo "$dom_line" >> /etc/hosts
 
 # download latest wordpress
 {
-    echo "Extracting wordpress..."
+    echo -e "Extracting wordpress...\n"
     cd /tmp
     curl -LO http://wordpress.org/latest.tar.gz &> /dev/null
 } || { 
@@ -205,7 +211,7 @@ echo "$dom_line" >> /etc/hosts
 }
 # enable the mysql service
 {
-    echo "Enabling mysql..."
+    echo -e "Enabling mysql...\n"
     systemctl enable mysql &> /dev/null
 } || {
     echo "Failed to start the mysql service."
@@ -215,20 +221,21 @@ echo "$dom_line" >> /etc/hosts
 DBNAME="${domain}_db"
 # create password for db user
 DBUSERPASS=$(date | md5sum | awk '{print $1}')
-echo -e "\nPLEASE NOTE!\nThe pw for the db user $DBUSER is: $DBUSERPASS\n"
 ## configure the db
 echo "Configuring mysql..."
 mysql_configure "$DBNAME" "$DBUSER" "$DBUSERPASS"
 
+echo -e "\nPLEASE NOTE!\nThe pw for the db user $DBUSER is: $DBUSERPASS\n"
+
 ## create wp-config.php
-echo "Creating php config..."
+echo -e "Creating php config...\n"
 php_config "$DBNAME" "$DBUSER" "$DBUSERPASS"
 
 ## make sure no apache instances are running
 if [[ $(systemctl is-active --quiet apache2) -eq 0 ]]
 then
     {
-        echo -e "Apache2 is running.\nStopping..."
+        echo -e "Apache2 is running.\nStopping...\n"
         systemctl stop apache2 &> /dev/null &&\
         systemctl disable apache2 &> /dev/null
     } || {
@@ -237,7 +244,7 @@ then
 fi
 
 # set ownership on WP_ROOT
-echo "Setting ownership of $WP_ROOT to www-data:www-data..."
+echo -e "Setting ownership of $WP_ROOT to www-data:www-data...\n"
 chown -R www-data:www-data "$WP_ROOT"
 
 ## start php-fpm

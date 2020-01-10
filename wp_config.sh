@@ -127,6 +127,7 @@ echo "Please enter the domain name: "
 read domain
 
 # update package manifest
+echo "Updating package manifest..."
 apt-get update &> /dev/null
 
 PACKAGES=("php" "php-curl" "php-gd" "php-xml" "php-xmlrpc" "php7.3-fpm" "php-mysql" "mysql-server"

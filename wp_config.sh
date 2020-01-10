@@ -175,6 +175,7 @@ DBUSERPASS=$(date | md5sum | awk '{print $1}')
 ## configure the db
 echo "Creating $DBUSER and $DBNAME..."
 mysql_configure "$DBNAME" "$DBUSER" "$DBUSERPASS"
+echo ""
 
 ## configuring nginx
 echo -e "CONFIGURING NGINX"
@@ -237,7 +238,7 @@ chown -R www-data:www-data "$WP_ROOT"
 echo "SYSTEM"
 
 ## add entry to /etc/hosts
-echo -e "Adding entry to /etc/hosts\n"
+echo -e "Adding entry to /etc/hosts"
 # use touch to make sure /etc/hosts exists
 touch /etc/hosts
 # create line
@@ -251,7 +252,7 @@ echo "$dom_line" >> /etc/hosts
 if [[ $(systemctl is-active --quiet apache2) -eq 0 ]]
 then
     {
-        echo -e "Apache2 is running.\nStopping...\n"
+        echo -e "Apache2 is running.\nStopping..."
         systemctl stop apache2 &> /dev/null &&\
         systemctl disable apache2 &> /dev/null
     } || {
@@ -261,7 +262,7 @@ fi
 
 ## start php-fpm
 {
-    echo -e "Starting php-fpm...\n"
+    echo -e "Starting php-fpm..."
     systemctl start php7.3-fpm &> /dev/null &&\
     systemctl enable php7.3-fpm &> /dev/null
 } || {
@@ -284,6 +285,6 @@ fi
     echo "The script will continue but this should be addressed manually."
 }
 
-echo -e "The script completed successfully."
+echo -e "\nThe script completed successfully."
 echo -e "\nPLEASE NOTE!\nThe pw for the db user $DBUSER is: $DBUSERPASS\n"
 echo "Please complete the installation at $domain."

@@ -264,14 +264,14 @@ fi
 
 ## start nginx service
 { 
-    systemctl start nginx
+    systemctl restart nginx &> /dev/null
 } || {
     echo "Failed to start the nginx service"
     exit 1
 }
 # enable the mysql service
 {
-    systemctl enable nginx
+    systemctl enable nginx &> /dev/null
 } || {
     echo "Failed to enable the nginx service."
     echo "The script will continue but this should be addressed manually."

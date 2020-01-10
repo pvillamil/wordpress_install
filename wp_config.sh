@@ -169,6 +169,8 @@ echo -e "CONFIGURING MYSQL"
 }
 
 ## mysql secure install
+echo "Performing secure install..."
+mysql_secure_install
 DBNAME="${domain}_db"
 # create password for db user
 DBUSERPASS=$(date | md5sum | awk '{print $1}')

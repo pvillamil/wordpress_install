@@ -253,12 +253,13 @@ php_config "$DBNAME" "$DBUSER" "$DBUSERPASS"
 ## make sure no apache instances are running
 if [[ $(systemctl is-active --quiet apache2) ]]
 then
-{
-    systemctl stop apache2 &&\
-    systemctl disable apache2
-} || {
-    echo -e "Apache2 is running and failed to stop or disable.\n Please check."
-}
+    {
+        systemctl stop apache2 &&\
+        systemctl disable apache2
+    } || {
+        echo -e "Apache2 is running and failed to stop or disable.\n Please check."
+    }
+fi
 
 ## start nginx service
 { 

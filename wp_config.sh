@@ -107,7 +107,8 @@ php_config() {
 install_pkg() {
     local PKG=$1
 
-    if [[ ! $(dpkg -l "$PKG" &> /dev/null) ]]; then
+    if [[ $(dpkg -l "$PKG" &> /dev/null) -ne 0 ]]
+    then
         {
             echo "Installing $PKG..."
             apt-get install -y "$PKG" &> /dev/null
@@ -115,8 +116,12 @@ install_pkg() {
             echo "Failed to install $PKG"
             exit 1
         }
+    else
+        echo "$PKG already installed."
     fi
 }
+
+# MAIN
 
 WWW_ROOT=/var/www/
 WP_ROOT="${WWW_ROOT}wordpress/"
@@ -139,37 +144,6 @@ do
     install_pkg "$pkg" 
 done
 
-# check if php is installed and install if it is not
-#if [[ ! $(dpkg -l php) ]]; then
-#    {
-#        apt-get install -y php php-curl php-gd php-intl php-mbstring php-soap \
-#        php-xml php-xmlrpc php-zip php-fpm php-mysql
-#    } || {
-#        echo "Failed to install PHP"
-#        exit 1
-#    }
-#fi
-#
-## check if mysql is installed and install if it is not
-#if [[ ! $(dpkg -l mysql-server) ]]; then
-#    {
-#        apt-get install -y mysql-server
-#    } || {
-#        echo "Failed to install mysql"
-#        exit 1
-#    }
-#fi
-#
-## check if nginx is installed and install if it is not
-#if [[ ! $(dpkg -l nginx) ]]; then
-#    {
-#        apt-get install -y nginx
-#    } || {
-#        echo "Failed to install nginx"
-#        exit 1
-#    }
-#fi
-
 ### add entry to /etc/hosts
 # use touch to make sure /etc/hosts exists
 touch /etc/hosts
@@ -180,7 +154,7 @@ sed -i '/'^"$domain"'/d' /etc/hosts
 # add the domain line
 echo "$dom_line" >> /etc/hosts
 
-# copy default wp nginx.conf
+# copy default wp nginx.conf and add the server_name
 {
     sed 's/insert_server_name/'"$domain"'/g' files/wordpress > /etc/nginx/sites-available/wordpress
     ln -s /etc/nginx/sites-available/wordpress /etc/nginx/sites-enabled/wordpress 
@@ -221,7 +195,6 @@ echo "$dom_line" >> /etc/hosts
 }
 
 ### db setup
-#echo "PLEASE NOTE!\nThe DB root password is: $DBPASS"
 # start service
 { 
     echo "Starting mysql..."
@@ -242,7 +215,7 @@ echo "$dom_line" >> /etc/hosts
 DBNAME="${domain}_db"
 # create password for db user
 DBUSERPASS=$(date | md5sum | awk '{print $1}')
-echo -e "PLEASE NOTE!\nThe pw for the db user $DBUSER is: $DBUSERPASS"
+echo -e "\nPLEASE NOTE!\nThe pw for the db user $DBUSER is: $DBUSERPASS\n"
 ## configure the db
 echo "Configuring mysql..."
 mysql_configure "$DBNAME" "$DBUSER" "$DBUSERPASS"
@@ -263,7 +236,7 @@ then
     }
 fi
 
-# set ownership on /var/www/wordpress
+# set ownership on WP_ROOT
 echo "Setting ownership of $WP_ROOT to www-data:www-data..."
 chown -R www-data:www-data "$WP_ROOT"
 
@@ -282,5 +255,5 @@ chown -R www-data:www-data "$WP_ROOT"
     echo "The script will continue but this should be addressed manually."
 }
 
-echo "The script completed successfully."
+echo "\nThe script completed successfully."
 echo "Please complete the installation at $domain."

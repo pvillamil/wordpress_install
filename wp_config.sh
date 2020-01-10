@@ -131,8 +131,10 @@ DBUSER=wpUser
 echo "Please enter the domain name: "
 read domain
 
+### install packages
+echo -e "\nINSTALING PACKAGES"
 # update package manifest
-echo "Updating package manifest..."
+echo -e "Updating package manifest..."
 apt-get update &> /dev/null
 
 PACKAGES=("php" "php-curl" "php-gd" "php-intl" "php-mbstring" "php-soap"
@@ -147,6 +149,33 @@ done
 # insert blank line in output for readability
 echo ""
 
+### db setup
+echo -e "CONFIGURING MYSQL"
+# start service
+{ 
+    echo "Starting mysql..."
+    systemctl start mysql &> /dev/null
+} || {
+    echo "Failed to start the mysql service"
+    exit 1
+}
+# enable the mysql service
+{
+    echo -e "Enabling mysql...\n"
+    systemctl enable mysql &> /dev/null
+} || {
+    echo "Failed to start the mysql service."
+    echo "The script will continue but this should be addressed manually."
+}
+
+## mysql secure install
+DBNAME="${domain}_db"
+# create password for db user
+DBUSERPASS=$(date | md5sum | awk '{print $1}')
+## configure the db
+echo "Creating $DBUSER and $DBNAME..."
+mysql_configure "$DBNAME" "$DBUSER" "$DBUSERPASS"
+
 ### add entry to /etc/hosts
 echo -e "Adding entry to /etc/hosts\n"
 # use touch to make sure /etc/hosts exists
@@ -157,6 +186,9 @@ dom_line="127.0.0.1 $domain"
 sed -i '/'^"$domain"'/d' /etc/hosts
 # add the domain line
 echo "$dom_line" >> /etc/hosts
+
+## configuring nginx
+echo -e "CONFIGURING NGINX\n"
 
 # copy default wp nginx.conf and add the server_name
 {
@@ -176,6 +208,9 @@ echo "$dom_line" >> /etc/hosts
     echo "Failed to disable the default site."
     exit 1
 }
+
+## install wordpress
+echo -e "INSTALLING WORDPRESS\n"
 
 # download latest wordpress
 {
@@ -200,33 +235,6 @@ echo "$dom_line" >> /etc/hosts
     exit 1
 }
 
-### db setup
-# start service
-{ 
-    echo "Starting mysql..."
-    systemctl start mysql &> /dev/null
-} || {
-    echo "Failed to start the mysql service"
-    exit 1
-}
-# enable the mysql service
-{
-    echo -e "Enabling mysql...\n"
-    systemctl enable mysql &> /dev/null
-} || {
-    echo "Failed to start the mysql service."
-    echo "The script will continue but this should be addressed manually."
-}
-## mysql secure install
-DBNAME="${domain}_db"
-# create password for db user
-DBUSERPASS=$(date | md5sum | awk '{print $1}')
-## configure the db
-echo "Configuring mysql..."
-mysql_configure "$DBNAME" "$DBUSER" "$DBUSERPASS"
-
-echo -e "\nPLEASE NOTE!\nThe pw for the db user $DBUSER is: $DBUSERPASS\n"
-
 ## create wp-config.php
 echo -e "Creating php config...\n"
 php_config "$DBNAME" "$DBUSER" "$DBUSERPASS"
@@ -249,6 +257,7 @@ chown -R www-data:www-data "$WP_ROOT"
 
 ## start php-fpm
 {
+    echo -e "Starting php-fpm...\n"
     systemctl start php7.3-fpm &> /dev/null &&\
     systemctl enable php7.3-fpm &> /dev/null
 } || {
@@ -271,5 +280,6 @@ chown -R www-data:www-data "$WP_ROOT"
     echo "The script will continue but this should be addressed manually."
 }
 
-echo -e "\nThe script completed successfully."
+echo -e "The script completed successfully."
+echo -e "\nPLEASE NOTE!\nThe pw for the db user $DBUSER is: $DBUSERPASS\n"
 echo "Please complete the installation at $domain."

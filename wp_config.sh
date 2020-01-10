@@ -255,7 +255,7 @@ php_config "$DBNAME" "$DBUSER" "$DBUSERPASS"
 if [[ $(systemctl is-active --quiet apache2) -eq 0 ]]
 then
     {
-        echo "Apache2 is running. Stopping..."
+        echo -e "Apache2 is running.\nStopping..."
         systemctl stop apache2 &> /dev/null &&\
         systemctl disable apache2 &> /dev/null
     } || {

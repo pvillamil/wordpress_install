@@ -47,7 +47,7 @@ mysql_configure() {
     }
     # create the wp db user
     {
-        create_user_comm="CREATE USER '$db_user'@'localhost' IDENTIFIED BY '$db_user_pass';"
+        create_user_comm="CREATE USER '$db_user'@'localhost' IDENTIFIED WITH mysql_native_password BY '$db_user_pass';"
         mysql -u root -e "$create_user_comm"
     } || {
         echo "Failed to create the db user $db_user"

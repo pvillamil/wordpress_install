@@ -122,6 +122,10 @@ WWW_ROOT=/var/www/
 WP_ROOT="${WWW_ROOT}wordpress/"
 DBUSER=wpUser
 
+# get domain name
+echo "Please enter the domain name: "
+read domain
+
 PACKAGES=("php" "php-curl" "php-gd" "php-xml" "php-xmlrpc" "php7.3-fpm" "php-mysql" "mysql-server"
     "nginx")
 
@@ -160,10 +164,6 @@ done
 #        exit 1
 #    }
 #fi
-
-# get domain name
-echo "Please enter the domain name: "
-read domain
 
 ### add entry to /etc/hosts
 # use touch to make sure /etc/hosts exists

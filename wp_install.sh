@@ -111,7 +111,7 @@ echo -e "Updating package manifest..."
 apt-get update &> /dev/null
 
 PACKAGES=("php" "php-curl" "php-gd" "php-intl" "php-mbstring" "php-soap"
-    "php-xml" "php-xmlrpc" "php7.3-fpm" "php-zip" "php-mysql" "mysql-server"
+    "php-xml" "php-xmlrpc" "php-fpm" "php-zip" "php-mysql" "mysql-server"
     "nginx")
 
 for pkg in "${PACKAGES[@]}"
@@ -140,6 +140,9 @@ echo -e "CONFIGURING MYSQL"
     echo "Failed to start the mysql service."
     echo "The script will continue but this should be addressed manually."
 }
+
+### get php version for fpm
+php_v=$(php -v | head -n 1 | cut -d " " -f2 | cut -d "-" -f1 | cut -d "." -f 1,2)
 
 ## mysql secure install
 DBNAME="${domain}_db"
@@ -236,8 +239,8 @@ fi
 ## start php-fpm
 {
     echo -e "Starting php-fpm..."
-    systemctl start php7.3-fpm &> /dev/null &&\
-    systemctl enable php7.3-fpm &> /dev/null
+    systemctl start php"$(php_v)"-fpm &> /dev/null &&\
+        systemctl enable php"$(php_v)"-fpm &> /dev/null
 } || {
     echo "Failed to satrt php-fpm."
     exit 1

@@ -160,6 +160,7 @@ echo -e "CONFIGURING NGINX"
 {
     echo -e "Copying nginx config..."
     sed 's/insert_server_name/'"$domain"'/g' files/wordpress > /etc/nginx/sites-available/wordpress
+    sed -i 's/#php_ver#/'"$php_v"'/g' /etc/nginx/sites-available/wordpress
     ln -s /etc/nginx/sites-available/wordpress /etc/nginx/sites-enabled/wordpress 
 } || {
     echo "Failed to cp the nginx conf"

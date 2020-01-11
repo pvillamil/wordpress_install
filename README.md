@@ -6,6 +6,7 @@ Installs and configures wordpress on Ubuntu Server.
 
 Tested versions:
 
++ Ubuntu 18.04 LTS
 + Ubuntu 19.10
 
 ## Usage

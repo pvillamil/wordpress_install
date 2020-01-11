@@ -3,33 +3,6 @@
 # set to fail on error and unset vars
 set -eu
 
-mysql_secure_install() {
-    # remove anonymous users
-    {
-        anon_comm="DELETE FROM mysql.user WHERE User='';"
-        mysql -u root -e "$anon_comm"
-    } || {
-        echo "Failed to remove anonymous users from mysql."
-        echo "The script will continue but this should be addressed manually"
-    }
-    # remove remote root login
-    {
-        rm_remote_comm="DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');"
-        mysql -u root -e "$rm_remote_comm"
-    } || {
-        echo "Failed to remove remote access for root."
-        echo "The script will continue but this should be addressed manually"
-    }
-    # remove the test db
-    {
-        rm_tst_db_comm="DROP DATABASE test;DELETE FROM mysql.db WHERE Db='test' OR Db='test\_%';"
-        mysql -u root -e "$rm_tst_db_comm"
-    } || {
-        echo "Failed to remove the test db."
-        echo "The script will continue but this should be addressed manually"
-    }
-}
-
 mysql_configure() {
     # $1=db name $2=db username $3=db user pass
     # create wp_db
@@ -169,8 +142,6 @@ echo -e "CONFIGURING MYSQL"
 }
 
 ## mysql secure install
-echo "Performing secure install..."
-mysql_secure_install
 DBNAME="${domain}_db"
 # create password for db user
 DBUSERPASS=$(date | md5sum | awk '{print $1}')

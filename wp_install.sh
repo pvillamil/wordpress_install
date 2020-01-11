@@ -239,8 +239,8 @@ fi
 ## start php-fpm
 {
     echo -e "Starting php-fpm..."
-    systemctl start php"$(php_v)"-fpm &> /dev/null &&\
-        systemctl enable php"$(php_v)"-fpm &> /dev/null
+    systemctl start php"$php_v"-fpm &> /dev/null &&\
+        systemctl enable php"$php_v"-fpm &> /dev/null
 } || {
     echo "Failed to satrt php-fpm."
     exit 1

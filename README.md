@@ -13,7 +13,7 @@ Tested versions:
 
 The script should be run as a user with sudo privileges or as root.
 
-+ `$ git clone https://github.com/cosmoduff/wordpress_install.git`
++ `$ git clone https://github.com/pvillamil/wordpress_install.git`
 + `$ cd wordpress_install`
 + `$ sudo ./wp_install.sh`
 + Enter the domain name when prompted.

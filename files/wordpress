@@ -1,11 +1,14 @@
 server {
 	listen 80;
+	listen [::]:80;
 
 	root /var/www/wordpress;
-
-	index index.php index.html index.htm index.nginx-debian.html;
+	index  index.php index.html index.htm;
 
 	server_name insert_server_name;
+	
+	client_max_body_size 100M;
+    	autoindex off;
 
 	location = /favicon.ico { log_not_found off; access_log off; }
 	location = /robots.txt { log_not_found off; access_log off; allow all; }
@@ -19,9 +22,10 @@ server {
 	}
 
 	location ~ \.php$ {
-		include snippets/fastcgi-php.conf;
-	
+		include snippets/fastcgi-php.conf;	
 		fastcgi_pass unix:/var/run/php/php#php_ver#-fpm.sock;
+		fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+         	include fastcgi_params;
 	}
 
 	location ~ /\.ht {
